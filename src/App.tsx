@@ -21,6 +21,19 @@ function App() {
   const [budget, setBudget] = useState<string>('1000');
   const [clicks, setClicks] = useState<string>('100');
   const [impressions, setImpressions] = useState<string>('10000');
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+
+  const calculateMetrics = () => {
+    setIsCalculating(true);
+    setShowResults(false);
+    
+    // Simulate calculation delay for better UX
+    setTimeout(() => {
+      setIsCalculating(false);
+      setShowResults(true);
+    }, 600);
+  };
 
   const cpc = Number(budget) && Number(clicks) ? (Number(budget) / Number(clicks)).toFixed(2) : '0.00';
   const ctr = Number(clicks) && Number(impressions) ? ((Number(clicks) / Number(impressions)) * 100).toFixed(2) : '0.00';
@@ -40,7 +53,7 @@ function App() {
 
         {/* Calculator Form */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 Campaign Budget ($)
@@ -89,10 +102,24 @@ function App() {
               </div>
             </div>
           </div>
+
+          <button
+            onClick={calculateMetrics}
+            disabled={isCalculating}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg
+              transform transition-all duration-200 ease-in-out
+              hover:scale-[1.02] active:scale-95
+              flex items-center justify-center gap-2
+              disabled:opacity-50 disabled:cursor-not-allowed
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            <Calculator className={`w-5 h-5 ${isCalculating ? 'animate-spin' : ''}`} />
+            <span>{isCalculating ? 'Calculating...' : 'Calculate Metrics'}</span>
+          </button>
         </div>
 
         {/* Results */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className={`grid md:grid-cols-3 gap-6 transition-all duration-500 ease-in-out ${showResults ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'}`}>
           <MetricCard
             title="Cost Per Click (CPC)"
             value={`$${cpc}`}
@@ -111,7 +138,7 @@ function App() {
         </div>
 
         {/* Tips */}
-        <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
+        <div className={`mt-8 bg-white rounded-xl shadow-lg p-6 transition-all duration-500 ease-in-out ${showResults ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Optimization Tips</h2>
           <ul className="space-y-2 text-gray-600">
             <li className="flex items-center gap-2">
